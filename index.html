@@ -1,0 +1,90 @@
+<!doctype html>
+<html>
+<head>
+<title>Hello LIFF App</title>
+<meta charset="utf-8">
+<meta content="width=device-width, initial-scale=1, shrink-to-fit=no, user-scalable=no" name="viewport">
+<script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>
+</head>
+<body>
+<div>
+    <main id="content">
+        <div><img id="profileImg" src=""height="120"></div>
+        <h3 id="displayName"></h3>
+        <div id="statusMessage"></div>
+        <input type="button" value="send" id="sendBtn">
+    </main>
+</div>
+<script>
+const elProfileImg = document.getElementById("profileImg");
+const elDisplayName = document.getElementById("displayName");
+const elSendBtn = document.getElementById("sendBtn");
+
+liff.init(
+    data => {
+
+        let fnSendMsg = (pictureUrl, displayName, statusMessage) => {
+            let tmplFlex = `
+            {
+                "type": "bubble",
+                "hero": {
+                    "type": "image",
+                    "url": "${pictureUrl}",
+                    "size": "full",
+                    "aspectRatio": "1:1",
+                    "aspectMode": "cover"
+                },
+                "body": {
+                    "type": "box",
+                    "layout": "vertical",
+                    "contents": [
+                    {
+                        "type": "text",
+                        "text": "${displayName}",
+                        "weight": "bold",
+                        "size": "xl"
+                    }
+                    ]
+                }
+            }`;
+
+            liff.sendMessages([
+                {
+                    'type': 'flex',
+                    'altText': 'profile',
+                    'contents': JSON.parse(tmplFlex)
+                }
+            ])
+            .then(profile => {
+            })
+            .catch((err) => {
+                window.alert(err.message);
+            });
+        }
+
+        liff.getProfile()
+        .then(profile => {
+
+            let pictureUrl = profile.pictureUrl;
+            let displayName = profile.displayName;
+
+            elProfileImg.src = pictureUrl;
+            elDisplayName.textContent = displayName;
+
+            elSendBtn.addEventListener('click', () => {
+                fnSendMsg(pictureUrl, displayName);
+            }, false);
+
+        })
+        .catch((err) => {
+            window.alert(err.message);
+        });
+
+    },
+    err => {
+        window.alert(err.message);
+    }
+);
+</script>
+</body>
+</html>
